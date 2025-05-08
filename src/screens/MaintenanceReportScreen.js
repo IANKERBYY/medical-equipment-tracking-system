@@ -1,161 +1,110 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, TextInput } from 'react-native-web';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { equipment } from '../data/mockData';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const MaintenanceReportScreen = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [currentUser, setCurrentUser] = useState(null);
-  const [selectedEquipment, setSelectedEquipment] = useState(null);
-  const [issueDescription, setIssueDescription] = useState('');
-  const [priority, setPriority] = useState('medium');
+  const [equipmentId, setEquipmentId] = useState('');
+  const [reportDescription, setReportDescription] = useState('');
+  const [urgency, setUrgency] = useState('Low');
+  const [reportDate, setReportDate] = useState(new Date().toISOString().split('T')[0]);
   const [submitted, setSubmitted] = useState(false);
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    if (!user || user.role !== 'nurse') {
-      navigate('/');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!equipmentId || !reportDescription) {
+      alert('Please fill in all required fields.');
       return;
     }
-    setCurrentUser(user);
-
-    // If equipment was pre-selected (coming from equipment details)
-    if (location.state?.equipmentId) {
-      const found = equipment.find(eq => eq.id === location.state.equipmentId);
-      if (found) setSelectedEquipment(found);
-    }
-  }, [navigate, location]);
-
-  const handleSubmit = () => {
-    if (!selectedEquipment || !issueDescription) return;
-    
-    // In a real app, this would make an API call
-    // For demo, we'll just show a success message
+    // Simulate submission
     setSubmitted(true);
-    setTimeout(() => {
-      navigate('/home');
-    }, 2000);
-  };
-
-  const priorityColors = {
-    low: 'bg-green-100 text-green-800',
-    medium: 'bg-yellow-100 text-yellow-800',
-    high: 'bg-red-100 text-red-800'
   };
 
   return (
-    <View className="min-h-screen bg-gray-100 p-4">
-      {/* Header */}
-      <View className="flex flex-row items-center mb-6">
-        <TouchableOpacity onPress={() => navigate('/home')} className="mr-4">
-          <i className="fas fa-arrow-left text-2xl text-gray-600"></i>
-        </TouchableOpacity>
-        <Text className="text-2xl font-bold">Report Equipment Issue</Text>
-      </View>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 p-6">
+      <header className="mb-8 flex items-center">
+        <button
+          onClick={() => navigate('/home')}
+          className="mr-4 text-primary-600 hover:text-primary-700 transition-colors duration-200"
+        >
+          <i className="fas fa-arrow-left text-2xl"></i>
+        </button>
+        <h1 className="text-4xl font-bold text-primary-700">Report Maintenance Issue</h1>
+      </header>
 
-      {submitted ? (
-        <View className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
-          <Text className="font-bold">Success!</Text>
-          <Text>Your maintenance report has been submitted. Redirecting...</Text>
-        </View>
-      ) : (
-        <View className="bg-white rounded-lg shadow-lg p-6 space-y-6">
-          {/* Equipment Selection */}
-          {!selectedEquipment && (
-            <View>
-              <Text className="text-lg font-semibold mb-4">Select Equipment</Text>
-              <View className="space-y-3">
-                {equipment.map((eq) => (
-                  <TouchableOpacity
-                    key={eq.id}
-                    className={`p-4 rounded-lg border-2 ${
-                      selectedEquipment?.id === eq.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200'
-                    }`}
-                    onPress={() => setSelectedEquipment(eq)}
-                  >
-                    <Text className="font-semibold">{eq.name}</Text>
-                    <Text className="text-gray-600">ID: {eq.id}</Text>
-                    <Text className="text-gray-600">Location: {eq.location}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {/* Selected Equipment Info */}
-          {selectedEquipment && (
-            <View className="bg-gray-50 p-4 rounded-lg">
-              <View className="flex flex-row justify-between items-start">
-                <View>
-                  <Text className="font-semibold">{selectedEquipment.name}</Text>
-                  <Text className="text-gray-600">ID: {selectedEquipment.id}</Text>
-                  <Text className="text-gray-600">Location: {selectedEquipment.location}</Text>
-                </View>
-                <TouchableOpacity
-                  onPress={() => setSelectedEquipment(null)}
-                  className="text-blue-500"
-                >
-                  <Text>Change</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-
-          {/* Issue Description */}
-          <View>
-            <Text className="text-lg font-semibold mb-2">Issue Description</Text>
-            <TextInput
-              multiline
-              numberOfLines={4}
-              className="border-2 border-gray-200 rounded-lg p-3"
-              placeholder="Describe the issue in detail..."
-              value={issueDescription}
-              onChange={(e) => setIssueDescription(e.target.value)}
+      {!submitted ? (
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8 max-w-lg mx-auto">
+          <div className="mb-6">
+            <label className="block font-semibold mb-2" htmlFor="equipmentId">Equipment ID *</label>
+            <input
+              id="equipmentId"
+              type="text"
+              className="w-full border border-gray-300 rounded p-3"
+              placeholder="Enter Equipment ID (e.g., EQ001)"
+              value={equipmentId}
+              onChange={(e) => setEquipmentId(e.target.value)}
+              required
             />
-          </View>
+          </div>
 
-          {/* Priority Selection */}
-          <View>
-            <Text className="text-lg font-semibold mb-2">Priority Level</Text>
-            <View className="flex flex-row space-x-4">
-              {['low', 'medium', 'high'].map((level) => (
-                <TouchableOpacity
-                  key={level}
-                  className={`flex-1 p-3 rounded-lg ${
-                    priority === level
-                      ? priorityColors[level]
-                      : 'bg-gray-100'
-                  }`}
-                  onPress={() => setPriority(level)}
-                >
-                  <Text className="text-center capitalize font-semibold">
-                    {level}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
+          <div className="mb-6">
+            <label className="block font-semibold mb-2" htmlFor="reportDescription">Issue Description *</label>
+            <textarea
+              id="reportDescription"
+              className="w-full border border-gray-300 rounded p-3"
+              rows="5"
+              placeholder="Describe the issue in detail"
+              value={reportDescription}
+              onChange={(e) => setReportDescription(e.target.value)}
+              required
+            ></textarea>
+          </div>
 
-          {/* Submit Button */}
-          <TouchableOpacity
-            className={`p-4 rounded-lg ${
-              selectedEquipment && issueDescription
-                ? 'bg-blue-500'
-                : 'bg-gray-300'
-            }`}
-            onPress={handleSubmit}
-            disabled={!selectedEquipment || !issueDescription}
+          <div className="mb-6">
+            <label className="block font-semibold mb-2" htmlFor="urgency">Urgency Level</label>
+            <select
+              id="urgency"
+              className="w-full border border-gray-300 rounded p-3"
+              value={urgency}
+              onChange={(e) => setUrgency(e.target.value)}
+            >
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+              <option>Critical</option>
+            </select>
+          </div>
+
+          <div className="mb-6">
+            <label className="block font-semibold mb-2" htmlFor="reportDate">Report Date</label>
+            <input
+              id="reportDate"
+              type="date"
+              className="w-full border border-gray-300 rounded p-3"
+              value={reportDate}
+              onChange={(e) => setReportDate(e.target.value)}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold py-3 rounded-xl shadow-md hover:from-primary-600 hover:to-primary-700 transition-all duration-200"
           >
-            <Text className="text-white text-center font-semibold">
-              Submit Report
-            </Text>
-          </TouchableOpacity>
-        </View>
+            Submit Report
+          </button>
+        </form>
+      ) : (
+        <div className="bg-white rounded-2xl shadow-lg p-8 max-w-lg mx-auto text-center">
+          <h2 className="text-3xl font-bold text-primary-700 mb-4">Report Submitted</h2>
+          <p className="mb-6">Thank you for submitting the maintenance report. Our team will review it shortly.</p>
+          <button
+            onClick={() => navigate('/home')}
+            className="bg-primary-600 text-white font-semibold py-3 px-6 rounded-xl shadow-md hover:bg-primary-700 transition-colors duration-200"
+          >
+            Back to Home
+          </button>
+        </div>
       )}
-    </View>
+    </div>
   );
 };
 
