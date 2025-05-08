@@ -1,100 +1,185 @@
 export const users = {
-  nurses: [
+  nurse: [
     { id: 1, name: 'Sarah Johnson', role: 'nurse', department: 'Emergency' },
     { id: 2, name: 'Mike Chen', role: 'nurse', department: 'ICU' },
   ],
-  technicians: [
-    { id: 3, name: 'John Smith', role: 'technician', specialization: 'Respiratory Equipment' },
-    { id: 4, name: 'Lisa Brown', role: 'technician', specialization: 'Diagnostic Equipment' },
+  technician: [
+    { id: 3, name: 'John Smith', role: 'technician', specialization: 'Medical Equipment' },
+    { id: 4, name: 'Lisa Brown', role: 'technician', specialization: 'Electronics' },
   ],
-  admins: [
-    { id: 5, name: 'David Wilson', role: 'admin' },
-  ]
+  admin: [
+    { id: 5, name: 'David Wilson', role: 'admin', department: 'Facility Management' },
+  ],
 };
 
 export const equipment = [
   {
     id: 'EQ001',
     name: 'Ventilator X100',
-    type: 'Respiratory',
     status: 'Active',
     location: 'ICU Room 201',
+    department: 'ICU',
     lastMaintenance: '2023-09-01',
     nextMaintenance: '2023-12-01',
-    condition: 'Good',
-    history: [
+    maintenanceHistory: [
       {
+        type: 'Regular Checkup',
+        description: 'Routine maintenance and calibration',
         date: '2023-09-01',
-        type: 'Maintenance',
-        description: 'Regular checkup',
-        technician: 'John Smith'
+        technician: 'John Smith',
       },
       {
-        date: '2023-08-15',
         type: 'Issue Reported',
         description: 'Unusual noise during operation',
-        reportedBy: 'Sarah Johnson'
-      }
-    ]
+        date: '2023-08-15',
+        technician: 'Sarah Johnson',
+      },
+    ],
   },
   {
     id: 'EQ002',
     name: 'Patient Monitor PM2000',
-    type: 'Monitoring',
     status: 'Under Repair',
-    location: 'Emergency Room 102',
+    location: 'Emergency',
+    department: 'Emergency',
     lastMaintenance: '2023-08-15',
     nextMaintenance: '2023-11-15',
-    condition: 'Needs Repair',
-    history: [
+    maintenanceHistory: [
       {
-        date: '2023-08-15',
-        type: 'Issue Reported',
-        description: 'Display malfunction',
-        reportedBy: 'Mike Chen'
-      }
-    ]
+        type: 'Repair',
+        description: 'Display malfunction - replacing LCD panel',
+        date: '2023-08-16',
+        technician: 'Lisa Brown',
+      },
+    ],
   },
   {
     id: 'EQ003',
     name: 'MRI Scanner Pro',
-    type: 'Diagnostic',
     status: 'Active',
-    location: 'Radiology Department',
-    lastMaintenance: '2023-07-30',
-    nextMaintenance: '2023-10-30',
-    condition: 'Good',
-    history: [
+    location: 'Radiology',
+    department: 'Radiology',
+    lastMaintenance: '2023-07-20',
+    nextMaintenance: '2023-10-20',
+    maintenanceHistory: [
       {
-        date: '2023-07-30',
-        type: 'Maintenance',
-        description: 'Annual calibration',
-        technician: 'Lisa Brown'
-      }
-    ]
-  }
+        type: 'Calibration',
+        description: 'Annual calibration and system update',
+        date: '2023-07-20',
+        technician: 'John Smith',
+      },
+    ],
+  },
 ];
 
 export const notifications = [
   {
     id: 1,
-    type: 'maintenance',
-    equipment: 'EQ001',
     message: 'Scheduled maintenance due in 5 days',
-    date: '2023-11-26'
+    date: '2023-11-26',
+    read: false,
+    type: 'maintenance',
   },
   {
     id: 2,
-    type: 'repair',
-    equipment: 'EQ002',
     message: 'Repair request assigned to Lisa Brown',
-    date: '2023-08-16'
+    date: '2023-08-16',
+    read: false,
+    type: 'repair',
   },
   {
     id: 3,
-    type: 'alert',
-    equipment: 'EQ003',
     message: 'Calibration check required',
-    date: '2023-10-25'
-  }
+    date: '2023-10-25',
+    read: true,
+    type: 'maintenance',
+  },
+];
+
+export const repairs = [
+  {
+    id: 'R001',
+    equipmentId: 'EQ002',
+    equipmentName: 'Patient Monitor PM2000',
+    reportDate: '2023-08-16',
+    description: 'Display showing artifacts and flickering',
+    status: 'In Progress',
+    assignedTo: 'Lisa Brown',
+    estimatedCompletion: '2023-08-30',
+    progress: 60,
+    notes: [
+      {
+        date: '2023-08-16',
+        text: 'Initial diagnosis complete - LCD panel needs replacement',
+        author: 'Lisa Brown',
+      },
+      {
+        date: '2023-08-17',
+        text: 'Replacement part ordered',
+        author: 'Lisa Brown',
+      },
+    ],
+  },
+  {
+    id: 'R002',
+    equipmentId: 'EQ001',
+    equipmentName: 'Ventilator X100',
+    reportDate: '2023-08-15',
+    description: 'Unusual noise during operation',
+    status: 'Completed',
+    assignedTo: 'John Smith',
+    estimatedCompletion: '2023-08-20',
+    progress: 100,
+    notes: [
+      {
+        date: '2023-08-15',
+        text: 'Identified loose component in cooling fan',
+        author: 'John Smith',
+      },
+      {
+        date: '2023-08-16',
+        text: 'Replaced fan assembly and tested operation',
+        author: 'John Smith',
+      },
+    ],
+  },
+];
+
+export const maintenanceSchedule = [
+  {
+    id: 'M001',
+    equipmentId: 'EQ001',
+    equipmentName: 'Ventilator X100',
+    type: 'Regular Maintenance',
+    scheduledDate: '2023-12-01',
+    assignedTo: 'John Smith',
+    status: 'Scheduled',
+  },
+  {
+    id: 'M002',
+    equipmentId: 'EQ003',
+    equipmentName: 'MRI Scanner Pro',
+    type: 'Calibration',
+    scheduledDate: '2023-10-20',
+    assignedTo: 'Lisa Brown',
+    status: 'Scheduled',
+  },
+];
+
+export const departments = [
+  'Emergency',
+  'ICU',
+  'Radiology',
+  'Surgery',
+  'General Ward',
+];
+
+export const equipmentTypes = [
+  'Ventilator',
+  'Patient Monitor',
+  'MRI Scanner',
+  'X-Ray Machine',
+  'Ultrasound',
+  'ECG Machine',
+  'Defibrillator',
 ];
